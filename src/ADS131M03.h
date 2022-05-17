@@ -853,7 +853,7 @@ bool        unlockRegisters(void);
 void        resetDevice(void);
 void        restoreRegisterDefaults(void);
 uint16_t    calculateCRC(const uint8_t dataBytes[], uint8_t numberBytes, uint16_t initialValue);
-void        ChangeGain(uint8_t channel, uint16_t value);
+bool        ChangeGain(uint8_t channel, uint16_t value);
 void        ChangeOSR(uint16_t value);
 void        EnableChannel(uint8_t channel);
 void        DisableChannel(uint8_t channel);

@@ -426,7 +426,7 @@ void adcStartup(void)
     /* (OPTIONAL) Define your initial register settings here */
     //writeSingleRegister(CLOCK_ADDRESS, (CLOCK_DEFAULT & ~CLOCK_OSR_MASK) | CLOCK_OSR_256);
     writeSingleRegister(CLOCK_ADDRESS, (registerMap[CLOCK_ADDRESS] & ~CLOCK_OSR_MASK) | CLOCK_OSR_512);
-    writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN0_MASK) | GAIN1_PGAGAIN0_8);
+    //writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN0_MASK) | GAIN1_PGAGAIN0_8);
 
     /* (REQUIRED) Configure MODE register settings
      * NOTE: This function call is required here for this particular code implementation to work.
@@ -444,24 +444,33 @@ void adcStartup(void)
 /// </summary>
 /// <param name="channel">The channel to change</param>
 /// <param name="value">The gain wanted. Use macro GAIN1_PGAGAIN0_ </param>
-void ChangeGain(uint8_t channel,uint16_t value)
+bool ChangeGain(uint8_t channel,uint16_t value)
 {
     noInterrupts();
+    uint16_t r = (value == 128) ? 7 : (value == 64) ? 6 :
+        (value == 32) ? 5 : (value == 16) ? 4 : (value == 8) ? 3 :
+        (value == 4) ? 2 : (value == 2) ? 1 : (value == 1) ? 0 : 0xFF;
+
+    if (r == 0xFF) {
+        return 0;
+    }
+
     switch (channel)
     {
     case(0):
-        writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN0_MASK) | value);
+        writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN0_MASK) | r << 0);
         break;
     case(1):
-        writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN1_MASK) | value);
+        writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN1_MASK) | r << 4);
         break;
     case(2):
-        writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN2_MASK) | value);
+        writeSingleRegister(GAIN1_ADDRESS, (registerMap[GAIN1_ADDRESS] & ~GAIN1_PGAGAIN2_MASK) | r << 8);
         break;
     default:
         break;
     }
     interrupts();
+    return 1;
 }
 
 /// <summary>

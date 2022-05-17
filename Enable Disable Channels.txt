@@ -1,0 +1,9 @@
+Disbales the clock for the specified channel
+
+Function: void EnableChannel(uint8_t channel)
+Function: void DisableChannel(uint8_t channel)
+
+Channels:
+0 = First Channel
+1 = Second Channel
+2 = Third Channel
